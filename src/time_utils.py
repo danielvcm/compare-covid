@@ -30,5 +30,5 @@ def get_marks_from_start_end(start, end):
     current = start
     while current <= end:
         result.append(current)
-        current += relativedelta(months=1)
-    return {unix_timestamp_millis(m):(str(m.strftime('%d/%m/%Y'))) for m in result}
+        current += relativedelta(months = 1)
+    return {unix_timestamp_millis(m):(str(m.strftime('%m/%Y'))) for m in result}

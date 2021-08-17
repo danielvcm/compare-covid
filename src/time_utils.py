@@ -32,3 +32,8 @@ def get_marks_from_start_end(start, end):
         result.append(current)
         current += relativedelta(months = 1)
     return {unix_timestamp_millis(m):(str(m.strftime('%m/%Y'))) for m in result}
+
+def get_day_from_timestamp(timestamp):
+    day = datetime.fromtimestamp(timestamp)
+    day = day.replace(hour=0, minute=0, second=0, microsecond=0)
+    return day.date()

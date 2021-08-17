@@ -1,12 +1,13 @@
 import pandas as pd
 from datetime import datetime
+
 class ParseData:
     UFS = ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO']
     REGIOES= ['Brasil','Norte', 'Nordeste', 'Centro-Oeste', 'Sul', 'Sudeste']
+    total_df = pd.read_csv('./data/clean_data.csv', sep=';')
+    total_df.data = total_df.data.apply(lambda x: datetime.strptime(x, "%Y-%m-%d"))
 
     def __init__(self, start_date, end_date) -> None:
-        self.total_df = pd.read_csv('./data/clean_data.csv', sep=';')
-        self.total_df.data = self.total_df.data.apply(lambda x: datetime.strptime(x, "%Y-%m-%d"))
         self.start_date = start_date
         self.end_date = end_date
 

@@ -4,21 +4,25 @@
 # visit http://127.0.0.1:8050/ in your web browser.
 
 import dash
+
 import dash_core_components as dcc
-from dash_core_components.Markdown import Markdown
 import dash_html_components as html
-from dash_html_components.Div import Div
 import plotly.express as px
+import pandas as pd
+
+from dash_core_components.Markdown import Markdown
+from dash_html_components.Div import Div
+
 from src.small_multiples import SmallMultiples
 from src.stacked_areas import StackedAreas
+
+from src.time_utils import unix_timestamp_millis, get_marks_from_start_end, daterange
 from datetime import datetime
-import pandas as pd
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
-
-
+    
 app.layout = html.Div([
     html.Div(children=[
         html.H1(children='Compare Covid'),
@@ -30,13 +34,16 @@ app.layout = html.Div([
                     selecionar um período no tempo no qual os dados serão extraídos. Sugerimos escolher ao menos uma semana, para
                     que alterações no fluxo de envios de relatórios por parte das secretarias de saúde não distorçam os gráficos."""),
         html.H5('Selecione um período:'),
-        dcc.DatePickerRange(
-            id='date-picker',
-            min_date_allowed=datetime(2020, 2, 25),
-            max_date_allowed=datetime(2021, 6, 30),
-            initial_visible_month=datetime(2020, 8, 9),
-            start_date=datetime(2020, 8, 9),
-            end_date=datetime(2020, 8, 15)
+        dcc.RangeSlider(
+            id='date-slider',
+            updatemode = 'mouseup', #don't let it update till mouse released
+            min = unix_timestamp_millis(daterange.min()),
+            max = unix_timestamp_millis(daterange.max()),
+            value = [unix_timestamp_millis(daterange.min()),
+                    unix_timestamp_millis(daterange.max())],
+            #TODO add markers for key dates
+            marks=get_marks_from_start_end(daterange.min(),
+                                        daterange.max()),
         )],style={'padding': '3% 5%'}),
     html.Div(
         [html.Div([html.H4('Gráficos de Comparações Entre Regiões Com Números Absolutos',),
@@ -67,21 +74,26 @@ app.layout = html.Div([
         ])],style={'padding': '0% 5%' })])
 
 @app.callback(
-    dash.dependencies.Output('small-multiples', 'figure'),
-    [dash.dependencies.Input('date-picker', 'start_date'),
-    dash.dependencies.Input('date-picker', 'end_date'),
-     dash.dependencies.Input('metric-select', 'value')])
-def update_small_multiples(start_date, end_date, metric):
+        dash.dependencies.Output('small-multiples', 'figure'),
+        [dash.dependencies.Input('date-slider', 'value'),
+         dash.dependencies.Input('metric-select', 'value')]
+    )
+def update_small_multiples(selected_date_tuple, metric):
+    start_date = datetime.fromtimestamp(selected_date_tuple[0])
+    end_date = datetime.fromtimestamp(selected_date_tuple[1])
     small_multiples = SmallMultiples(start_date, end_date)
     fig = small_multiples.make_plot(metric)
     return fig
 
 @app.callback(
-    dash.dependencies.Output('stacked-areas', 'figure'),
-    [dash.dependencies.Input('date-picker', 'start_date'),
-    dash.dependencies.Input('date-picker', 'end_date'),
-     dash.dependencies.Input('metric-select-region', 'value')])
-def update_stacked_areas(start_date, end_date, metric):
+        dash.dependencies.Output('stacked-areas', 'figure'),
+        [dash.dependencies.Input('date-slider', 'value'),
+         dash.dependencies.Input('metric-select-region', 'value')]
+    )
+def update_stacked_areas(selected_date_tuple, metric):
+    start_date = datetime.fromtimestamp(selected_date_tuple[0])
+    end_date = datetime.fromtimestamp(selected_date_tuple[1])
+
     stacked_areas = StackedAreas(start_date, end_date)
     fig = stacked_areas.make_plot(metric)
     return fig

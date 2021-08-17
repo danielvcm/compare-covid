@@ -8,9 +8,11 @@ import dash_core_components as dcc
 from dash_core_components.Markdown import Markdown
 import dash_html_components as html
 from dash_html_components.Div import Div
+from numpy import fromstring
 import plotly.express as px
 from src.small_multiples import SmallMultiples
 from src.stacked_areas import StackedAreas
+from src.time_utils import unix_timestamp_millis, get_marks_from_start_end, daterange
 from datetime import datetime
 import pandas as pd
 
@@ -28,8 +30,8 @@ app.layout = html.Div([
         dcc.Markdown("""Temos dois tipos de visualizações, uma para dados absolutos e outra para métricas que tentam normalizar
                     os dados para que não haja uma distorção entre estados com muito e pouco populosos. Para ambas, deve-se primeiro
                     selecionar um período no tempo no qual os dados serão extraídos. Sugerimos escolher ao menos uma semana, para
-                    que alterações no fluxo de envios de relatórios por parte das secretarias de saúde não distorçam os gráficos."""),
-        html.H5('Selecione um período:'),
+                    que alterações no fluxo de envios de relatórios por parte das secretarias de saúde não distorçam os gráficos."""),],style={'padding': '3% 5%'}),
+        html.Div([html.H5('Selecione um período:'),
         dcc.DatePickerRange(
             id='date-picker',
             min_date_allowed=datetime(2020, 2, 25),
@@ -37,7 +39,7 @@ app.layout = html.Div([
             initial_visible_month=datetime(2020, 8, 9),
             start_date=datetime(2020, 8, 9),
             end_date=datetime(2020, 8, 15)
-        )],style={'padding': '3% 5%'}),
+        )], style={'position': '-webkit-sticky','position':'sticky', 'top':'0','padding': '0.5% 5%', 'background-color': 'white', 'display': 'inline-block','z-index':'4'}),
     html.Div(
         [html.Div([html.H4('Gráficos de Comparações Entre Regiões Com Números Absolutos',),
             dcc.Markdown("""Esses gráficos visam facilitar a visualização das diferenças entre regiões levando em consideração o
@@ -85,6 +87,7 @@ def update_stacked_areas(start_date, end_date, metric):
     stacked_areas = StackedAreas(start_date, end_date)
     fig = stacked_areas.make_plot(metric)
     return fig
+
 
 if __name__ == '__main__':
     app.run_server(debug=True)

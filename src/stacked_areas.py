@@ -3,7 +3,7 @@ import plotly.express as px
 
 class StackedAreas:
     metrics = {'casosAcumulado': "Casos Acumulados",
-                'obitosAcumulado': "Óbitos Acumulados"}
+               'obitosAcumulado': "Óbitos Acumulados"}
     
     def __init__(self, start_date, end_date) -> None:
         parse_data = ParseData(start_date, end_date)
@@ -14,4 +14,5 @@ class StackedAreas:
               color="regiao", line_group="estado",
               title=self.metrics[metric], 
               labels = {'data': "Data", metric: self.metrics[metric]})
+
         return fig

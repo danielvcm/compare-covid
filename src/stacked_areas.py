@@ -1,6 +1,6 @@
 from .parse_data import ParseData
 import plotly.express as px
-
+from .small_multiples import SmallMultiples
 class StackedAreas:
     metrics = {'casosAcumulado': "Casos Acumulados",
                'obitosAcumulado': "Óbitos Acumulados"}
@@ -13,5 +13,6 @@ class StackedAreas:
         fig = px.area(self.complete_df, x="data", y=metric, 
               color="regiao", line_group="estado",
               title=self.metrics[metric], 
-              labels = {'data': "Data", metric: self.metrics[metric]})
+              labels = {'data': "Data", metric: self.metrics[metric]},
+              color_discrete_sequence=SmallMultiples.COLORS)
         return fig

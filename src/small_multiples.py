@@ -1,9 +1,11 @@
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 from .parse_data import ParseData
-
+import plotly.express as px
 class SmallMultiples:
-    REGIONS = ["Norte", "Centro-Oeste", "Sudeste", "Sul", "Nordeste" ]
+    REGIONS = ["Norte", "Sudeste","Nordeste", "Sul", "Centro-Oeste"]
+    COLORS = ['#636EFA', '#EF553B', '#AB63FA', '#00CC96', '#FFA15A', '#19D3F3', '#FF6692', '#B6E880', '#FF97FF', '#FECB52']
+
     
     metrics = {"óbitosPorCasos": 'Porcentagem de óbitos por casos', "casosPorCemMilHab":'Casos por 100 mil habitantes', "óbitosPorCemMilHab":'Óbitos por 100 mil habitantes' }
     def __init__(self, start_date, end_date) -> None:
@@ -41,5 +43,5 @@ class SmallMultiples:
         max_value = self.df_states[metric].max()
         self.fig.add_hline(y=df_br[metric].iloc[0],annotation_text = "Brasil", annotation_hovertext=hovertext)
         self.fig.update_yaxes(range=[0,max_value+(5*max_value/100)])
-        self.fig.update_layout(height=900, width=700, title_text=self.metrics[metric])
+        self.fig.update_layout(height=900, width=700, title_text=self.metrics[metric],colorway=self.COLORS)
         return self.fig

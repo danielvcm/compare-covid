@@ -123,7 +123,7 @@ def make_layout():
                     html.Br(),
                 ], style={ 'display': 'inline-block'})
                 
-            ]),
+            ], style={'padding-bottom': '5%',}),
             html.Footer([html.H6("""Aplicação desenvolvida como trabalho final da Disciplina Visualização de Dados do Departamento de Ciência da Computação da Universidade Federal de Minas Gerais"""),
                                 html.H6('Autores: Daniel Miranda e Giovanni Martinelli')], style={'padding-top': '1%',
                                 'left': '0','bottom': '4%',  'width': '100%',  'text-align': 'left', 'border-top': '1px solid'})

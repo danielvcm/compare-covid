@@ -22,7 +22,7 @@ class SmallMultiples:
         if regiao == "Centro-Oeste":
             return 2, 1
         if regiao == "Sul":
-            return 3, 1
+            return 3, 2
         else:
             return None, None
     

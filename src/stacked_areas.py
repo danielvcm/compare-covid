@@ -15,4 +15,5 @@ class StackedAreas:
               title=self.metrics[metric], 
               labels = {'data': "Data", metric: self.metrics[metric]},
               color_discrete_sequence=SmallMultiples.COLORS)
+        fig.update_layout(height=700)
         return fig

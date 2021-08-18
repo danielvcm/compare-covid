@@ -51,22 +51,34 @@ app.layout = html.Div(
                     ao menos uma semana, para que alterações no fluxo de envios de relatórios por parte das secretarias de saúde não
                     distorçam os gráficos."""),
         html.Br(),
-        html.H5('Selecione um período:'),
-        html.Div(
+        
+        ], style={'padding': '0% 20%', }),
+    html.Div(
+        [
+        dbc.Card(
+            dbc.CardBody([
+            html.Div([ html.H5('Selecione um período:'),
             dcc.DatePickerRange(
             id='date-picker-range',
             min_date_allowed=datetime(2020, 2, 25),
             max_date_allowed=datetime(2021, 6, 30),
-            initial_visible_month=datetime(2020, 8, 9),
+            initial_visible_month=datetime(2020, 3, 9),
             start_date=datetime(2020, 8, 9),
-            end_date=datetime(2020, 8, 15)
-            ), style={'padding-top': '1%',
-                      'padding-bottom': '5%',
-                      'padding-left': '2%' }
-        )
-        ], style={'padding': '0% 20%', }),
-    html.Div(
-        [
+            end_date=datetime(2020, 8, 15),
+            minimum_nights = 7
+            )],id='date-picker-div'),
+            dbc.Button('Esconder',id='hide-date-picker',n_clicks=0, size='sm',style={'padding-letf':'2%'})]), style={
+                    'position':'sticky',
+                        'top': '1%',
+                      'padding-bottom': '0%',
+                      'padding-left': '2%',
+                      'padding-right': '2%',
+                      'display': 'inline-block',
+                      'z-index':'4'},
+            
+        ),
+        html.Br(),
+        html.Br(),
         html.Div(
             [
                 html.H3('Gráficos de Comparações Entre Regiões Com Números Absolutos',),
@@ -124,9 +136,14 @@ app.layout = html.Div(
                         marks=get_marks_from_start_end(daterange.min(), daterange.max())
                     
                     ), id='date-slider-small-multiples-div'),
-
+                    html.Br(),
+                    html.Br(),
                 ], style={ 'display': 'inline-block'})
-            ])
+                
+            ]),
+            html.Footer([html.H6("""Aplicação desenvolvida como trabalho final da Disciplina Visualização de Dados do Departamento de Ciência da Computação da Universidade Federal de Minas Gerais"""),
+                                html.H6('Autores: Daniel Miranda e Giovanni Martinelli')], style={'padding-top': '1%',
+                                'left': '0','bottom': '4%',  'width': '100%',  'text-align': 'left', 'border-top': '1px solid'})
         ], style={'padding': '0% 20%' })])
 
 # Callback to update sliders
@@ -231,6 +248,22 @@ def update_date_picker_with_slider(first_slider_range_tuple, second_slider_range
         last_values = (first_slider_days, first_slider_days)
         return first_slider_days[0], first_slider_days[1], last_values
 
+@app.callback(
+   dash.dependencies.Output(component_id='date-picker-div', component_property='style'),
+   [dash.dependencies.Input(component_id='hide-date-picker', component_property='n_clicks')])
+def show_hide_element(clicked):
+    if clicked%2 == 0:
+        return {'display': 'block'}
+    if clicked%2 == 1:
+        return {'display': 'none'}
 
+@app.callback(
+   dash.dependencies.Output(component_id='hide-date-picker', component_property='children'),
+   [dash.dependencies.Input(component_id='hide-date-picker', component_property='n_clicks')])
+def show_hide_element(clicked):
+    if clicked%2 == 0:
+        return 'Esconder'
+    if clicked%2 == 1:
+        return 'Calendário'
 if __name__ == '__main__':
     app.run_server(debug=True)

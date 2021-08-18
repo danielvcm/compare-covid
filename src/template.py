@@ -9,6 +9,7 @@ from .stacked_areas import StackedAreas
 from .time_utils import unix_timestamp_millis, get_marks_from_start_end, daterange
 from datetime import datetime
 
+from .interactables import DatePicker, Sliders, Graphs, Dropdowns, Button
 
 class Template:
 
@@ -24,7 +25,7 @@ class Template:
     
     def intro(self):
         return html.Div(children=[
-                dcc.Store(id='last-value'),
+                dcc.Store(id=Sliders.LastValue.id),
                 html.H1(children='Compare Covid', 
                         className="app-header--title",       
                         style=Styles.title
@@ -43,15 +44,15 @@ class Template:
                     html.Div([
                         html.H5('Selecione um período:'),
                         dcc.DatePickerRange(
-                            id='date-picker-range',
+                            id= DatePicker.id,
                             min_date_allowed=daterange.min(),
                             max_date_allowed=daterange.max(),
                             initial_visible_month=datetime(2020, 3,1),
                             start_date=daterange.min(),
                             end_date=daterange.max(),
                             minimum_nights = 7
-                        )],id='date-picker-div'),
-                    dbc.Button('Esconder',id='hide-date-picker',n_clicks=0, size='sm',style=Styles.date_picker_hide_button)]), 
+                        )],id=DatePicker.div_id),
+                    dbc.Button('Esconder',id=Button.id,n_clicks=0, size='sm',style=Styles.date_picker_hide_button)]), 
                     style=Styles.date_picker_card,  
             )
 
@@ -72,25 +73,18 @@ class Template:
                     html.H5('Selecione uma métrica:'),
                     html.Div([
                         dcc.Dropdown(
-                            id='metric-select-region',
+                            id=Dropdowns.StackedAreas.id,
                             options=[{'label': StackedAreas.metrics[item], 'value': item} for item in StackedAreas.metrics],
                             value='casosAcumulado'
                         )
                     ]),
                     
                     html.Div([
-                        dcc.Graph(id='stacked-areas')]),
+                        dcc.Graph(id=Graphs.StackedAreas.id)]),
                         html.Div(
-                            dcc.RangeSlider(
-                                id='date-slider-stacked-charts',
-                                updatemode = 'mouseup', #don't let it update till mouse released
-                                min = unix_timestamp_millis(daterange.min()),
-                                max = unix_timestamp_millis(daterange.max()),
-                                value = [unix_timestamp_millis(daterange.min()),
-                                        unix_timestamp_millis(daterange.max())],
-                                marks=get_marks_from_start_end(daterange.min(),
-                                    daterange.max())), 
-                                id='date-slider-stacked-charts-div')
+                            Sliders.StackedAreas.build(unix_timestamp_millis(daterange.min()),
+                                                        unix_timestamp_millis(daterange.max())), 
+                            id=Sliders.StackedAreas.div_id)
                 ], style=Styles.graphs)
     
     def small_multiples(self):
@@ -102,26 +96,19 @@ class Template:
                         dcc.Markdown(Texts.small_multiples_markdown),
                         html.H5('Selecione uma métrica:'),
                         dcc.Dropdown(
-                            id='metric-select',
+                            id=Dropdowns.SmallMultiples.id,
                             options=[{'label': SmallMultiples.metrics[item], 'value': item} for item in SmallMultiples.metrics],
                             value='casosPorCemMilHab'
                         ),
                         
                         html.Div([
-                            dcc.Graph(id='small-multiples'),
+                            dcc.Graph(id=Graphs.SmallMultiples.id),
                         ]),
 
-                        html.Div(children = dcc.RangeSlider(
-                            id='date-slider-small-multiples',
-                            updatemode = 'mouseup', #don't let it update till mouse released
-                            min = unix_timestamp_millis(daterange.min()),
-                            max = unix_timestamp_millis(daterange.max()),
-                            value = [unix_timestamp_millis(daterange.min()),
-                                    unix_timestamp_millis(daterange.max())],
-                            
-                            marks=get_marks_from_start_end(daterange.min(), daterange.max())
-                        
-                        ), id='date-slider-small-multiples-div'),
+                        html.Div(
+                            Sliders.SmallMultiples.build(unix_timestamp_millis(daterange.min()),
+                                                        unix_timestamp_millis(daterange.max()) 
+                        ), id=Sliders.SmallMultiples.div_id),
                         html.Br(),
                         html.Br(),
                     ])

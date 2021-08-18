@@ -7,7 +7,7 @@ import dash
 
 import dash_core_components as dcc
 import dash_bootstrap_components as dbc
-from src.interactables import DatePicker, Sliders, Button
+from src.interactables import DatePicker, Sliders, Button, Graphs, Dropdowns
 from src.small_multiples import SmallMultiples
 from src.stacked_areas import StackedAreas
 from src.template import Template
@@ -21,20 +21,10 @@ server = app.server
 template = Template()
 app.layout = template.make_layout()
 
-# Callback to update sliders
-@app.callback(
-    [dash.dependencies.Output(component_id='date-slider-stacked-charts-div', component_property='children'),
-     dash.dependencies.Output(component_id='date-slider-small-multiples-div', component_property='children')],
-    [dash.dependencies.Input('date-picker-range', 'start_date'),
-     dash.dependencies.Input('date-picker-range', 'end_date')])    
-def update_slider(start_date, end_date):
-    return Sliders.update_slider(start_date, end_date)
 # Callback to update stacked-areas graph
 @app.callback(
-    dash.dependencies.Output('stacked-areas', 'figure'),
-    [dash.dependencies.Input('date-picker-range', 'start_date'),
-    dash.dependencies.Input('date-picker-range', 'end_date'),
-     dash.dependencies.Input('metric-select-region', 'value')])
+    Graphs.StackedAreas.output,
+    [DatePicker.start_date_input, DatePicker.end_date_input, Dropdowns.StackedAreas.input])
 def update_stacked_areas(start_date, end_date, metric):
     stacked_areas = StackedAreas(start_date, end_date)
     fig = stacked_areas.make_plot(metric)
@@ -42,23 +32,24 @@ def update_stacked_areas(start_date, end_date, metric):
 
 # Callback to update small-multiples graph
 @app.callback(
-    dash.dependencies.Output('small-multiples', 'figure'),
-    [dash.dependencies.Input('date-picker-range', 'start_date'),
-    dash.dependencies.Input('date-picker-range', 'end_date'),
-     dash.dependencies.Input('metric-select', 'value')])
+    Graphs.SmallMultiples.output,
+    [DatePicker.start_date_input, DatePicker.end_date_input, Dropdowns.SmallMultiples.input])
 def update_small_multiples(start_date, end_date, metric):
     small_multiples = SmallMultiples(start_date, end_date)
     fig = small_multiples.make_plot(metric)
     return fig
 
+# Callback to update sliders
+@app.callback(
+    [Sliders.StackedAreas.div_output, Sliders.SmallMultiples.div_output],
+    [DatePicker.start_date_input, DatePicker.end_date_input])    
+def update_slider(start_date, end_date):
+    return Sliders.update_slider(start_date, end_date)
+
 # Callback to update date-picker
 @app.callback(
-        [dash.dependencies.Output('date-picker-range', 'start_date'),
-         dash.dependencies.Output('date-picker-range', 'end_date'),
-         dash.dependencies.Output('last-value', 'data')],
-        [dash.dependencies.Input('date-slider-stacked-charts', 'value'),
-        dash.dependencies.Input('date-slider-small-multiples', 'value'),
-        dash.dependencies.Input('last-value', 'data')]
+        [DatePicker.start_date_output, DatePicker.end_date_output, Sliders.LastValue.output],
+        [Sliders.StackedAreas.input, Sliders.SmallMultiples.input, Sliders.LastValue.input]
     )
 def update_date_picker_with_slider(first_slider_range_tuple, second_slider_range_tuple, last_values):
     """ 
@@ -68,15 +59,17 @@ def update_date_picker_with_slider(first_slider_range_tuple, second_slider_range
     """
     return DatePicker.update_with_sliders(first_slider_range_tuple, second_slider_range_tuple, last_values)
 
+# Callback to hide or show date picker
 @app.callback(
-   dash.dependencies.Output(component_id='date-picker-div', component_property='style'),
-   [dash.dependencies.Input(component_id='hide-date-picker', component_property='n_clicks')])
+   DatePicker.div_output,
+   Button.input)
 def show_hide_date_picker(clicked):
     return Button.show_hide_date_picker(clicked)
 
+# Callback to change button text
 @app.callback(
-   dash.dependencies.Output(component_id='hide-date-picker', component_property='children'),
-   [dash.dependencies.Input(component_id='hide-date-picker', component_property='n_clicks')])
+   Button.output,
+   Button.input)
 def update_button_text(clicked):
     return Button.update_button_text(clicked)
 

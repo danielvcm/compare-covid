@@ -10,7 +10,7 @@ import dash_bootstrap_components as dbc
 from src.interactables import DatePicker, Sliders, Button
 from src.small_multiples import SmallMultiples
 from src.stacked_areas import StackedAreas
-from src.template import make_layout
+from src.template import Template
 from datetime import datetime
 
 
@@ -18,8 +18,8 @@ app = dash.Dash(__name__, external_stylesheets=[dbc.themes.LUX])
 
 server = app.server
 
-
-app.layout = make_layout()
+template = Template()
+app.layout = template.make_layout()
 
 # Callback to update sliders
 @app.callback(

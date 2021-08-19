@@ -17,6 +17,7 @@ class StackedAreas:
               color="regiao", line_group="estado",
               title=self.metrics[metric], 
               labels = {'data': "Data", metric: self.metrics[metric]},
+              category_orders={"regiao": SmallMultiples.REGIONS},
               color_discrete_map=color_map)
         fig.update_layout(height=700)
         return fig

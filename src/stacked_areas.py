@@ -10,10 +10,13 @@ class StackedAreas:
         self.complete_df = parse_data.generate_regions_results()
     
     def make_plot(self, metric):
+        color_map = {}
+        for i in range(len(SmallMultiples.REGIONS)):
+            color_map[SmallMultiples.REGIONS[i]] = SmallMultiples.COLORS[i]
         fig = px.area(self.complete_df, x="data", y=metric, 
               color="regiao", line_group="estado",
               title=self.metrics[metric], 
               labels = {'data': "Data", metric: self.metrics[metric]},
-              color_discrete_sequence=SmallMultiples.COLORS)
+              color_discrete_map=color_map)
         fig.update_layout(height=700)
         return fig
